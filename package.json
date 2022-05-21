@@ -1,0 +1,20 @@
+{
+  "name": "EPYC",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/rtm-api": "^6.0.0",
+    "@slack/web-api": "^6.7.1",
+    "dotenv": "^16.0.1",
+    "env": "0.0.2",
+    "slackbots": "^1.2.0"
+  }
+}
