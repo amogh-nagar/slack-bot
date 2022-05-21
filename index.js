@@ -1,94 +1,55 @@
-const SlackBot = require('slackbots');
-const axios = require('axios');
+const { App } = require("@slack/bolt");
+const { submitmodal } = require("./modal_intergface");
 
-const bot = new SlackBot({
-  token: 'xoxb-YOUR-OWN-TOKEN',
-  name: 'jokebot'
+const app = new App({
+  signingSecret: "2bf3812aff2f6b9569ed61009a0f49d9",
+  token: "xoxb-3567025960769-3558628457570-AyYO8cfKdGkNjRMjvO5HQbGp",
+  socketMode: true,
+  appToken:
+    "xapp-1-A03GEJE3D18-3551998309286-2d05b6ed042932b73b75b4aaf72ffa5219032464454feb7d1e42973137e23b0f",
+  port: 3000,
 });
 
-// Start Handler
-bot.on('start', () => {
-  const params = {
-    icon_emoji: ':smiley:'
-  };
 
-  bot.postMessageToChannel(
-    'general',
-    'Get Ready To Laugh With @Jokebot!',
-    params
-  );
-});
 
-// Error Handler
-bot.on('error', err => console.log(err));
 
-// Message Handler
-bot.on('message', data => {
-  if (data.type !== 'message') {
-    return;
+
+app.shortcut("open_modal", async ({ ack, payload, client }) => {
+  ack();
+
+  try {
+    const result = await client.views.open({
+      trigger_id: payload.trigger_id,
+      view: submitmodal
+    });
+    console.log(result);
+  } catch (error) {
+    console.error(error);
   }
-
-  handleMessage(data.text);
 });
 
-// Respons to Data
-function handleMessage(message) {
-  if (message.includes(' chucknorris')) {
-    chuckJoke();
-  } else if (message.includes(' yomama')) {
-    yoMamaJoke();
-  } else if (message.includes(' random')) {
-    randomJoke();
-  } else if (message.includes(' help')) {
-    runHelp();
-  }
-}
-
-// Tell a Chuck Norris Joke
-function chuckJoke() {
-  axios.get('http://api.icndb.com/jokes/random').then(res => {
-    const joke = res.data.value.joke;
-
-    const params = {
-      icon_emoji: ':laughing:'
-    };
-
-    bot.postMessageToChannel('general', `Chuck Norris: ${joke}`, params);
+app.message("hello", async ({ message, say }) => {
+  await say({
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `Hey there <@${message.user}>!`,
+        },
+        accessory: {
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Click Me",
+          },
+          action_id: "button_click",
+        },
+      },
+    ],
+    text: `Hey there <@${message.user}>!`,
   });
-}
-
-// Tell a Yo Mama Joke
-function yoMamaJoke() {
-  axios.get('http://api.yomomma.info').then(res => {
-    const joke = res.data.joke;
-
-    const params = {
-      icon_emoji: ':laughing:'
-    };
-
-    bot.postMessageToChannel('general', `Yo Mama: ${joke}`, params);
-  });
-}
-
-// Tell a Random Joke
-function randomJoke() {
-  const rand = Math.floor(Math.random() * 2) + 1;
-  if (rand === 1) {
-    chuckJoke();
-  } else if (rand === 2) {
-    yoMamaJoke();
-  }
-}
-
-// Show Help Text
-function runHelp() {
-  const params = {
-    icon_emoji: ':question:'
-  };
-
-  bot.postMessageToChannel(
-    'general',
-    `Type @jokebot with either 'chucknorris', 'yomama' or 'random' to get a joke`,
-    params
-  );
-}
+});
+app.start(3000).then(() => {
+  console.log("Server started");
+});
