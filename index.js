@@ -1,34 +1,82 @@
 const { App } = require("@slack/bolt");
-const { submitmodal } = require("./modal_intergface");
-
+const { submitmodal, texttypemodal } = require("./modal_intergface");
+const { WebClient } = require("@slack/web-api");
+const web = new WebClient(
+  "xoxb-3567025960769-3561336578372-ix33x5566UoMw3sCwzoA9XXo"
+);
 const app = new App({
-  signingSecret: "2bf3812aff2f6b9569ed61009a0f49d9",
-  token: "xoxb-3567025960769-3558628457570-AyYO8cfKdGkNjRMjvO5HQbGp",
+  signingSecret: "f465a5f67d0e88b4d8808355926fbbcd",
+  token: "xoxb-3567025960769-3561336578372-ix33x5566UoMw3sCwzoA9XXo",
   socketMode: true,
   appToken:
-    "xapp-1-A03GEJE3D18-3551998309286-2d05b6ed042932b73b75b4aaf72ffa5219032464454feb7d1e42973137e23b0f",
+    "xapp-1-A03GH9V2KEG-3556070383973-ff404f78d147b7b2fb4153fa7fa7dc9abf65564311d81c434140ad10b1e500d8",
   port: 3000,
 });
 
 
-
-
-
 app.shortcut("open_modal", async ({ ack, payload, client }) => {
   ack();
-
   try {
     const result = await client.views.open({
       trigger_id: payload.trigger_id,
-      view: submitmodal
+      view: texttypemodal,
     });
-    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+});
+app.view("modal-identifier", async ({ ack, view }) => {
+  const submittedValues = view.state.values;
+  try {
+    const res = await ack({ response_action: "update", view: submitmodal });
+    console.log("res ", res);
+  } catch (err) {
+    console.error(`Error submitting Thing B modal:`);
+    console.error(err);
+  }
+  console.log(submittedValues);
+});
+
+app.view("submitted-form", async ({ ack, view, client }) => {
+  const submittedValues = view.state.values;
+  console.log(submittedValues);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(9, 0, 0);
+  
+  try {
+     await client.chat.scheduleMessage({
+      channel: "#general",
+      text: "Looking towards the future",
+      post_at: Number.parseInt(tomorrow.getTime()/1000),
+    });
+    ack()
   } catch (error) {
     console.error(error);
   }
 });
 
+app.command("/schedule", async ({ command, ack, respond, client, payload }) => {
+  ack();
+  try {
+    const result = await client.views.open({
+      trigger_id: payload.trigger_id,
+      view: texttypemodal,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.event("submit", async ({ body, ack, say }) => {
+  console.log(body);
+  // Acknowledge the action
+  await ack();
+  await say(`<@${body.user.id}> clicked the button`);
+});
+
 app.message("hello", async ({ message, say }) => {
+  //   console.log(message);
   await say({
     blocks: [
       {
