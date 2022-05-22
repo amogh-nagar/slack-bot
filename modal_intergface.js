@@ -113,7 +113,7 @@ const submitmodal = {
       type: "input",
       element: {
         type: "datepicker",
-        initial_date: "1990-04-28",
+        initial_date: "2022-05-22",
         placeholder: {
           type: "plain_text",
           text: "Select a date",
@@ -152,7 +152,7 @@ const submitmodal = {
       block_id: "multifield",
 
       element: {
-        type: "multi_static_select",
+        type: "static_select",
         placeholder: {
           type: "plain_text",
           text: "Select options",
@@ -162,7 +162,7 @@ const submitmodal = {
           {
             text: {
               type: "plain_text",
-              text: "*this is plain_text text*",
+              text: "Your timezone",
               emoji: true,
             },
             value: "value-0",
@@ -170,18 +170,10 @@ const submitmodal = {
           {
             text: {
               type: "plain_text",
-              text: "*this is plain_text text*",
+              text: "Recepients timezone",
               emoji: true,
             },
             value: "value-1",
-          },
-          {
-            text: {
-              type: "plain_text",
-              text: "*this is plain_text text*",
-              emoji: true,
-            },
-            value: "value-2",
           },
         ],
         action_id: "multi_static_select-action",
@@ -199,6 +191,7 @@ const submitmodal = {
         text: "Learn more about timezone adjustmentst and <https://google.com|how it works>",
       },
     },
+    
     {
       type: "input",
       block_id: "radiofield",
