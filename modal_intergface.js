@@ -180,7 +180,7 @@ const submitmodal = {
       },
       label: {
         type: "plain_text",
-        text: "Label",
+        text: "Select timezone",
         emoji: true,
       },
     },
